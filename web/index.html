@@ -1,0 +1,436 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Turath Lens</title>
+  <style>
+    /* Egypt heritage palette */
+    :root {
+      --sand: #f2e8d5;        /* sandstone / papyrus */
+      --papyrus: #efe9d1;     /* lighter papyrus */
+      --nile: #1f6f8b;        /* Nile blue */
+      --gold: #c9a227;        /* gold accents */
+      --basalt: #2a2a2a;      /* dark stone */
+      --ok:#0a7f3f; --warn:#e08a00; --err:#c62828; --muted:#666;
+      --card:#ffffff;
+    }
+
+    /* Background: gradient + optional image overlay via #bg */
+    html, body { height: 100%; }
+    body {
+      margin:0;
+      background:
+        radial-gradient(200% 120% at 10% -10%, #fff8 0%, transparent 40%),
+        linear-gradient(180deg, var(--sand), var(--papyrus));
+      color:#111;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, "Noto Sans", Arial, sans-serif;
+    }
+    /* Fullscreen background image with tint; toggle via .no-image on body */
+    #bg {
+      position: fixed; inset: 0; z-index: -1;
+      background-image:
+        linear-gradient(rgba(42,42,42,0.45), rgba(242,232,213,0.35)),
+        url("imgs/pyramid.jpg"); /* Pyramids */
+      background-size: cover; background-position: center;
+      filter: saturate(1.05) contrast(1.05);
+    }
+    body.no-image #bg { display:none; }
+
+    .container { max-width: 900px; margin: 24px auto; padding: 0 16px; }
+    .topbar { display:flex; gap:10px; align-items:center; justify-content:flex-end; }
+    .chip { padding: 6px 12px; border: 1px solid #ddd; background: #fff; border-radius: 999px; cursor: pointer; }
+
+    .card {
+      background: color-mix(in srgb, var(--card) 92%, transparent);
+      backdrop-filter: blur(4px);
+      border-radius: 12px;
+      box-shadow: 0 2px 10px rgba(0,0,0,.08);
+      padding: 18px;
+      border: 1px solid rgba(0,0,0,0.05);
+    }
+    h1, h2, h3 { margin: 8px 0 12px; }
+    .row { display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin: 8px 0; }
+    input[type=file] { padding: 8px; }
+    button {
+      padding: 10px 14px; border: 1px solid #ddd; background:#fff; border-radius:8px; cursor: pointer;
+      transition: transform .02s ease-in-out, box-shadow .15s;
+    }
+    button:active { transform: translateY(1px); }
+    button.primary { background: var(--nile); color:#fff; border-color: var(--nile); }
+    button.primary:hover { box-shadow: 0 2px 8px rgba(31,111,139,.35); }
+    button:disabled { opacity:.6; cursor:not-allowed; }
+    #status { min-height: 20px; font-size: 14px; color: var(--muted); }
+    .pill { display:inline-block; padding:2px 8px; border-radius:999px; font-size:12px; background:#eee; }
+    .pill.ok { background:#e6f5ee; color: var(--ok); }
+    .pill.warn { background:#fff4e5; color: var(--warn); }
+    .pill.err { background:#fdecea; color: var(--err); }
+    #preview { max-width: 100%; max-height: 260px; display:none; border-radius:8px; border: 1px solid #0001; }
+    #answer { white-space: pre-wrap; margin-top: 10px; }
+    .meta { font-size: 12px; color: var(--muted); }
+    .grid { display:grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap:12px; }
+    .divider { height:1px; background:#ddd; margin:16px 0; }
+    .hidden { display:none; }
+    .kbd { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; background:#f2f2f2; padding:1px 6px; border-radius:5px; font-size:12px; }
+    textarea { width:100%; min-height: 90px; }
+
+    /* Gold accent underline for headings */
+    h1::after, h3::after {
+      content:""; display:block; height:3px; width:64px; margin-top:6px;
+      background: linear-gradient(90deg, var(--gold), #e6c35a 60%, transparent);
+      border-radius: 2px;
+    }
+  </style>
+</head>
+<body>
+  <!-- Background image layer -->
+  <div id="bg" aria-hidden="true"></div>
+
+  <div class="container">
+    <div class="topbar">
+      <button id="themeToggle" class="chip" title="Toggle background">🎨 Theme: Image</button>
+      <button id="langToggle" class="chip" title="Toggle language">العربية</button>
+    </div>
+
+    <div class="card">
+      <h1 id="title">Turath Lens — Heritage Assistant</h1>
+      <div id="subtitle" class="meta">Upload a photo of a heritage site or artifact, and get a concise Arabic description. Then ask follow‑up questions.</div>
+
+      <div class="divider"></div>
+
+      <div class="row">
+        <input type="file" id="file" accept="image/*" />
+        <button id="analyze" class="primary">Upload & Analyze</button>
+        <span id="status" aria-live="polite"></span>
+      </div>
+
+      <div class="grid">
+        <div>
+          <img id="preview" alt="Image preview"/>
+        </div>
+        <div>
+          <div class="row"><span id="origLabel">Original:</span> <span id="origMeta" class="pill"></span></div>
+          <div class="row"><span id="compLabel">Compressed:</span> <span id="compMeta" class="pill"></span></div>
+          <div class="row">
+            <label for="quality" id="qualityLabel">Quality</label>
+            <input type="range" id="quality" min="0.4" max="0.95" step="0.05" value="0.75" />
+            <span id="qualityVal" class="kbd">0.75</span>
+          </div>
+          <div class="row">
+            <label for="maxSide" id="maxSideLabel">Max side (px)</label>
+            <input type="range" id="maxSide" min="600" max="1600" step="100" value="1000" />
+            <span id="maxSideVal" class="kbd">1000</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <h3 id="answerHeading">Answer</h3>
+      <div id="answer">—</div>
+      <div class="row">
+        <button id="speak" class="hidden">🔊 Listen</button>
+        <button id="copy" class="hidden">Copy</button>
+        <span id="answerNote" class="meta"></span>
+      </div>
+
+      <div class="divider"></div>
+
+      <h3 id="followHeading">Follow‑up question</h3>
+      <div class="row">
+        <textarea id="question" placeholder="Type your question..."></textarea>
+      </div>
+      <div class="row">
+        <button id="ask">Ask</button>
+      </div>
+    </div>
+
+    <p id="tip" class="meta" style="margin-top:10px;">
+      Tip: For best latency, keep images under ~1 MB (base64 adds ~33%).
+      You can tweak <span class="kbd">quality</span> and <span class="kbd">max side</span> above.
+    </p>
+  </div>
+
+  <script>
+    // Replace with your Function URL (trailing slash is fine)
+    const FUNCTION_URL = "https://gevuleglncapqi5ayvenhx6q5q0esmjc.lambda-url.us-west-2.on.aws/";
+    // Optional: your own background image URL (S3, CloudFront, etc.)
+    const BACKGROUND_URL = "https://images.unsplash.com/photo-1544989164-31dc3c645987?q=80&w=1920&auto=format&fit=crop";
+
+    // i18n strings
+    const T = {
+      en: {
+        toggle: "العربية",
+        title: "Turath Lens — Heritage Assistant",
+        subtitle: "Upload a photo of a heritage site or artifact, and get a concise Arabic description. Then ask follow‑up questions.",
+        uploadAnalyze: "Upload & Analyze",
+        original: "Original:",
+        compressed: "Compressed:",
+        quality: "Quality",
+        maxSide: "Max side (px)",
+        answerHeading: "Answer",
+        listen: "🔊 Listen",
+        copy: "Copy",
+        responseNote: "Response in Arabic (UTF‑8).",
+        followHeading: "Follow‑up question",
+        placeholderQ: "Type your question...",
+        tip: "Tip: For best latency, keep images under ~1 MB (base64 adds ~33%). You can tweak quality and max side above.",
+        statusCompressing: "Compressing...",
+        statusAnalyzing: "Analyzing...",
+        statusAnswering: "Answering...",
+        statusDone: "Done",
+        statusError: "Error",
+        chooseImageFirst: "Choose an image first",
+        analyzeErrorPrefix: "Error during analyze: ",
+        chatErrorPrefix: "Error during chat: ",
+        themeImage: "🎨 Theme: Image",
+        themeColors: "🎨 Theme: Colors"
+      },
+      ar: {
+        toggle: "English",
+        title: "Turath Lens — مساعد التراث",
+        subtitle: "ارفع صورة لمعلم أو قطعة تراثية لتحصل على وصف موجز بالعربية، ثم اسأل أسئلة متابعة.",
+        uploadAnalyze: "رفع الصورة وشرحها",
+        original: "الأصل:",
+        compressed: "بعد الضغط:",
+        quality: "الجودة",
+        maxSide: "أقصى ضلع (بكسل)",
+        answerHeading: "الإجابة",
+        listen: "🔊 استمع",
+        copy: "نسخ",
+        responseNote: "الرد بالعربية (UTF‑8).",
+        followHeading: "سؤال متابعة",
+        placeholderQ: "اكتب سؤالك هنا...",
+        tip: "نصيحة: لسرعة أفضل اجعل الصور أقل من 1MB (الترميز Base64 يزيد الحجم ~33%). يمكنك ضبط الجودة وأقصى ضلع أعلاه.",
+        statusCompressing: "جارٍ الضغط...",
+        statusAnalyzing: "جارٍ التحليل...",
+        statusAnswering: "جارٍ الإجابة...",
+        statusDone: "تم",
+        statusError: "خطأ",
+        chooseImageFirst: "اختر صورة أولاً",
+        analyzeErrorPrefix: "خطأ أثناء التحليل: ",
+        chatErrorPrefix: "خطأ أثناء السؤال: ",
+        themeImage: "🎨 الخلفية: صورة",
+        themeColors: "🎨 الخلفية: ألوان"
+      }
+    };
+
+    // State
+    let lang = "en";
+    let lastContext = "", lastAnswer = "";
+
+    // Elements
+    const el = (id) => document.getElementById(id);
+    const $bg = document.getElementById('bg');
+    const $themeToggle = el('themeToggle');
+    const $langToggle = el('langToggle');
+    const $title = el('title'), $subtitle = el('subtitle');
+    const $file = el('file'), $analyze = el('analyze'), $status = el('status');
+    const $preview = el('preview'), $origMeta = el('origMeta'), $compMeta = el('compMeta');
+    const $origLabel = el('origLabel'), $compLabel = el('compLabel');
+    const $quality = el('quality'), $qualityVal = el('qualityVal');
+    const $maxSide = el('maxSide'), $maxSideVal = el('maxSideVal');
+    const $answerHeading = el('answerHeading'), $answer = el('answer');
+    const $speak = el('speak'), $copy = el('copy'), $answerNote = el('answerNote');
+    const $followHeading = el('followHeading'), $question = el('question'), $ask = el('ask');
+    const $tip = el('tip');
+
+    // Helpers
+    function setStatus(msg, type=''){
+      $status.textContent = msg || '';
+      $status.className = type ? `pill ${type}` : '';
+    }
+
+    function bytesToStr(n){
+      if (!Number.isFinite(n)) return '-';
+      const u = ['B','KB','MB','GB']; let i=0; while(n>=1024 && i<u.length-1){ n/=1024; i++; }
+      return `${n.toFixed(2)} ${u[i]}`;
+    }
+
+    function fileToDataURL(file){
+      return new Promise((resolve, reject) => {
+        const r = new FileReader();
+        r.onload = () => resolve(r.result);
+        r.onerror = () => reject(new Error('Failed to read file.'));
+        r.readAsDataURL(file);
+      });
+    }
+
+    async function compressImage(file, maxSide, quality){
+      const dataUrl = await fileToDataURL(file);
+      const img = await new Promise((res, rej) => {
+        const i = new Image();
+        i.onload = () => res(i);
+        i.onerror = () => rej(new Error('Failed to load image.'));
+        i.src = dataUrl;
+      });
+
+      $preview.src = dataUrl; $preview.style.display = 'block';
+
+      const scale = Math.min(1, maxSide / Math.max(img.width, img.height));
+      const w = Math.round(img.width * scale), h = Math.round(img.height * scale);
+      const canvas = Object.assign(document.createElement('canvas'), { width: w, height: h });
+      const ctx = canvas.getContext('2d', { alpha: false, desynchronized: true });
+      ctx.drawImage(img, 0, 0, w, h);
+
+      const outDataUrl = canvas.toDataURL('image/jpeg', quality);
+      const base64 = outDataUrl.split(',')[1];
+
+      $origMeta.textContent = `${img.width}×${img.height}px • ${bytesToStr(file.size)}`;
+      const approxBytes = Math.ceil((base64.length * 3) / 4);
+      $compMeta.textContent = `${w}×${h}px • ~${bytesToStr(approxBytes)}`;
+
+      return base64;
+    }
+
+    async function safeFetchJson(url, options, timeoutMs=45000){
+      const ctrl = new AbortController();
+      const t = setTimeout(() => ctrl.abort('timeout'), timeoutMs);
+      try{
+        const res = await fetch(url, { ...options, signal: ctrl.signal });
+        const text = await res.text();
+        let data; try { data = JSON.parse(text); } catch { data = { raw:text }; }
+        if(!res.ok){ throw new Error(`HTTP ${res.status}: ${data?.error || res.statusText || 'HTTP error'}`); }
+        return data;
+      } catch(err){
+        if (err?.name === 'AbortError') throw new Error(lang === 'ar' ? 'انتهت مهلة الطلب. جرّب صورة أصغر أو أعد المحاولة.' : 'Request timed out. Try a smaller image or try again.');
+        if (String(err).includes('Failed to fetch') || String(err).includes('NetworkError')) {
+          throw new Error(lang === 'ar'
+            ? 'مشكلة شبكة/صلاحيات CORS. تأكد من اتصالك وبأن CORS مفعّلة من جهة واحدة فقط.'
+            : 'Network/CORS error. Make sure you are online and CORS is enabled in one place only.'
+          );
+        }
+        throw err;
+      } finally { clearTimeout(t); }
+    }
+
+    async function analyze(){
+      const file = $file.files?.[0];
+      if (!file) { alert(T[lang].chooseImageFirst); return; }
+      $analyze.disabled = true; setStatus(T[lang].statusCompressing, 'warn'); $answer.textContent = '—';
+      try {
+        const q = Number($quality.value), m = Number($maxSide.value);
+        $qualityVal.textContent = q.toFixed(2); $maxSideVal.textContent = String(m);
+        const b64 = await compressImage(file, m, q);
+        setStatus(T[lang].statusAnalyzing, 'warn');
+
+        const data = await safeFetchJson(FUNCTION_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'analyze', imageBase64: b64 })
+        });
+
+        lastContext = data.context || data.answer || '';
+        lastAnswer = data.answer || data.raw || '(no response)';
+        $answer.textContent = lastAnswer;
+        $answerNote.textContent = T[lang].responseNote;
+        $speak.classList.remove('hidden');
+        $copy.classList.remove('hidden');
+        setStatus(T[lang].statusDone, 'ok');
+      } catch (e) {
+        console.error(e);
+        setStatus(T[lang].statusError, 'err');
+        $answer.textContent = T[lang].analyzeErrorPrefix + e.message;
+        $speak.classList.add('hidden');
+        $copy.classList.add('hidden');
+      } finally { $analyze.disabled = false; }
+    }
+
+    async function ask(){
+      const q = $question.value.trim();
+      if(!q) return;
+      setStatus(T[lang].statusAnswering, 'warn');
+      try{
+        const data = await safeFetchJson(FUNCTION_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'chat', question: q, context: lastContext })
+        });
+        lastAnswer = data.answer || data.raw || '(no response)';
+        $answer.textContent = lastAnswer;
+        setStatus(T[lang].statusDone, 'ok');
+      } catch(e){
+        console.error(e);
+        setStatus(T[lang].statusError, 'err');
+        $answer.textContent = T[lang].chatErrorPrefix + e.message;
+      }
+    }
+
+    function speak(){
+      if(!lastAnswer) return;
+      const u = new SpeechSynthesisUtterance(lastAnswer);
+      u.lang = (lang === 'ar') ? 'ar' : 'en-US';
+      window.speechSynthesis.speak(u);
+    }
+
+    async function copyAnswer(){
+      try { await navigator.clipboard.writeText($answer.textContent || ''); setStatus(lang==='ar' ? 'تم النسخ' : 'Copied', 'ok'); }
+      catch { setStatus(lang==='ar' ? 'فشل النسخ' : 'Copy failed', 'err'); }
+      finally { setTimeout(()=> setStatus(''), 1200); }
+    }
+
+    function applyLang(l){
+      lang = l; localStorage.setItem('lang', l);
+      document.documentElement.lang = l;
+      document.documentElement.dir = (l === 'ar') ? 'rtl' : 'ltr';
+
+      $langToggle.textContent = T[l].toggle;
+      $title.textContent = T[l].title;
+      $subtitle.textContent = T[l].subtitle;
+      $analyze.textContent = T[l].uploadAnalyze;
+      $origLabel.textContent = T[l].original;
+      $compLabel.textContent = T[l].compressed;
+      el('qualityLabel').textContent = T[l].quality;
+      el('maxSideLabel').textContent = T[l].maxSide;
+      $answerHeading.textContent = T[l].answerHeading;
+      $speak.textContent = T[l].listen;
+      $copy.textContent = T[l].copy;
+      $answerNote.textContent = T[l].responseNote;
+      $followHeading.textContent = T[l].followHeading;
+      $question.placeholder = T[l].placeholderQ;
+      $tip.textContent = T[l].tip;
+      $qualityVal.textContent = Number($quality.value).toFixed(2);
+      $maxSideVal.textContent = String($maxSide.value);
+      $themeToggle.textContent = document.body.classList.contains('no-image') ? T[l].themeColors : T[l].themeImage;
+    }
+
+    function toggleLang(){ applyLang(lang === 'ar' ? 'en' : 'ar'); }
+
+    function applyBackground(url){
+      if (url) { $bg.style.backgroundImage =
+        `linear-gradient(rgba(42,42,42,0.45), rgba(242,232,213,0.35))), url("${url}")`;
+      }
+    }
+
+    function toggleTheme(){
+      document.body.classList.toggle('no-image');
+      $themeToggle.textContent = document.body.classList.contains('no-image') ? T[lang].themeColors : T[lang].themeImage;
+      localStorage.setItem('themeNoImage', document.body.classList.contains('no-image') ? '1' : '0');
+    }
+
+    (function init(){
+      // Load saved prefs
+      const savedLang = localStorage.getItem('lang');
+      const autoLang = (navigator.language || 'en').toLowerCase().startsWith('ar') ? 'ar' : 'en';
+      applyLang(savedLang || autoLang);
+
+      const noImg = localStorage.getItem('themeNoImage') === '1';
+      if (noImg) document.body.classList.add('no-image');
+      $themeToggle.textContent = document.body.classList.contains('no-image') ? T[lang].themeColors : T[lang].themeImage;
+
+      // Apply background image (your URL or remove to use gradient-only)
+      applyBackground(BACKGROUND_URL);
+
+      // Wire up
+      $langToggle.addEventListener('click', toggleLang);
+      $themeToggle.addEventListener('click', toggleTheme);
+      el('analyze').addEventListener('click', analyze);
+      el('ask').addEventListener('click', ask);
+      el('speak').addEventListener('click', speak);
+      el('copy').addEventListener('click', copyAnswer);
+      el('quality').addEventListener('input', () => el('qualityVal').textContent = Number(el('quality').value).toFixed(2));
+      el('maxSide').addEventListener('input', () => el('maxSideVal').textContent = String(el('maxSide').value));
+    })();
+  </script>
+</body>
+</html>
