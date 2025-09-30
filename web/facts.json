@@ -1,0 +1,158 @@
+{
+  "items": [
+    {
+      "id": "giza-pyramids",
+      "names": {
+        "en": ["Giza Pyramids", "Pyramids of Giza", "Great Pyramid of Giza", "Khufu", "Khafre", "Menkaure"],
+        "ar": [
+          "أهرامات الجيزة",
+          "الأهرامات",
+          "الاهرامات",
+          "الأهرام",
+          "الاهرام",
+          "اهرامات",
+          "أهرامات",
+          "الجيزة",
+          "الهرم الأكبر",
+          "خوفو",
+          "خفرع",
+          "منقرع"
+        ]
+      },
+      "facts": [
+        "The Giza pyramid complex dates to Egypt's Old Kingdom (circa 26th century BCE).",
+        "The Great Pyramid is attributed to Pharaoh Khufu and was the tallest man-made structure for millennia.",
+        "The three main pyramids are attributed to Khufu, Khafre, and Menkaure."
+      ],
+      "sources": [
+        { "title": "Wikipedia: Giza pyramid complex", "url": "https://en.wikipedia.org/wiki/Giza_pyramid_complex" }
+      ]
+    },
+    {
+      "id": "great-sphinx",
+      "names": {
+        "en": ["Great Sphinx", "Sphinx of Giza"],
+        "ar": ["أبو الهول", "أبو الهول بالجيزة", "السفنكس", "سفينكس"]
+      },
+      "facts": [
+        "Limestone statue with a lion's body and a human head, near the Giza pyramids.",
+        "Commonly associated with Pharaoh Khafre (Old Kingdom)."
+      ],
+      "sources": [
+        { "title": "Wikipedia: Great Sphinx of Giza", "url": "https://en.wikipedia.org/wiki/Great_Sphinx_of_Giza" }
+      ]
+    },
+    {
+      "id": "karnak",
+      "names": {
+        "en": ["Karnak", "Karnak Temple Complex", "Amun Temple"],
+        "ar": ["الكرنك", "معبد الكرنك", "معبد آمون"]
+      },
+      "facts": [
+        "One of the largest religious complexes in the world, expanded over many dynasties.",
+        "Dedicated primarily to Amun, with monumental pylons and the Great Hypostyle Hall."
+      ],
+      "sources": [
+        { "title": "Wikipedia: Karnak", "url": "https://en.wikipedia.org/wiki/Karnak" }
+      ]
+    },
+    {
+      "id": "luxor-temple",
+      "names": {
+        "en": ["Luxor Temple"],
+        "ar": ["معبد الأقصر"]
+      },
+      "facts": [
+        "Major temple on the east bank of the Nile in Luxor, linked to Karnak by the Avenue of Sphinxes.",
+        "Key associations with the Opet festival in the New Kingdom."
+      ],
+      "sources": [
+        { "title": "Wikipedia: Luxor Temple", "url": "https://en.wikipedia.org/wiki/Luxor_Temple" }
+      ]
+    },
+    {
+      "id": "abu-simbel",
+      "names": {
+        "en": ["Abu Simbel", "Great Temple of Ramses II"],
+        "ar": ["أبو سمبل", "معبد رمسيس الثاني بأبو سمبل"]
+      },
+      "facts": [
+        "Rock-cut temples built by Ramses II, relocated in the 1960s due to the Aswan High Dam.",
+        "Famous for the colossal seated statues at the entrance."
+      ],
+      "sources": [
+        { "title": "Wikipedia: Abu Simbel temples", "url": "https://en.wikipedia.org/wiki/Abu_Simbel_temples" }
+      ]
+    },
+    {
+      "id": "saqqara-djoser",
+      "names": {
+        "en": ["Saqqara", "Step Pyramid of Djoser"],
+        "ar": ["سقارة", "هرم زوسر المدرج"]
+      },
+      "facts": [
+        "The Step Pyramid of Djoser at Saqqara is considered the earliest colossal stone building in Egypt.",
+        "Designed by the architect Imhotep for Pharaoh Djoser."
+      ],
+      "sources": [
+        { "title": "Wikipedia: Pyramid of Djoser", "url": "https://en.wikipedia.org/wiki/Pyramid_of_Djoser" }
+      ]
+    },
+    {
+      "id": "philae",
+      "names": {
+        "en": ["Philae", "Temple of Isis"],
+        "ar": ["فيلة", "معبد إيزيس"]
+      },
+      "facts": [
+        "Temple complex dedicated to Isis; relocated to Agilkia Island during the UNESCO project.",
+        "Blend of Pharaonic and later influences."
+      ],
+      "sources": [
+        { "title": "Wikipedia: Philae", "url": "https://en.wikipedia.org/wiki/Philae" }
+      ]
+    },
+    {
+      "id": "egyptian-museum",
+      "names": {
+        "en": ["Egyptian Museum (Tahrir)"],
+        "ar": ["المتحف المصري بالتحرير"]
+      },
+      "facts": [
+        "Houses a vast collection of ancient Egyptian antiquities.",
+        "Located in Tahrir Square, Cairo (collections are transitioning to GEM and NMEC)."
+      ],
+      "sources": [
+        { "title": "Wikipedia: Egyptian Museum", "url": "https://en.wikipedia.org/wiki/Egyptian_Museum" }
+      ]
+    },
+    {
+      "id": "saladin-citadel",
+      "names": {
+        "en": ["Saladin Citadel", "Cairo Citadel"],
+        "ar": ["قلعة صلاح الدين", "قلعة القاهرة"]
+      },
+      "facts": [
+        "Medieval Islamic-era fortification in Cairo with panoramic city views.",
+        "Includes later monuments such as the Mosque of Muhammad Ali."
+      ],
+      "sources": [
+        { "title": "Wikipedia: Cairo Citadel", "url": "https://en.wikipedia.org/wiki/Cairo_Citadel" }
+      ]
+    },
+    {
+      "id": "sultan-hassan",
+      "names": {
+        "en": ["Mosque-Madrasa of Sultan Hassan"],
+        "ar": ["مسجد ومدرسة السلطان حسن"]
+      },
+      "facts": [
+        "Mamluk-era monumental complex famed for its grand scale and stonework.",
+        "Built in the 14th century during the reign of Sultan an-Nasir Hasan."
+      ],
+      "sources": [
+        { "title": "Wikipedia: Mosque-Madrasa of Sultan Hassan", "url": "https://en.wikipedia.org/wiki/Mosque-Madrasa_of_Sultan_Hassan" }
+      ]
+    }
+  ]
+}

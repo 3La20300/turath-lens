@@ -1,0 +1,25 @@
+{
+  "name": "Turath Lens — Heritage Assistant",
+  "short_name": "Turath Lens",
+  "description": "Bilingual (AR/EN) heritage assistant with image understanding and Q&A.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#f2e8d5",
+  "theme_color": "#1f6f8b",
+  "icons": [
+    {
+      "src": "imgs/pyramid.jpg",
+      "sizes": "192x192",
+      "type": "image/jpeg",
+      "purpose": "any"
+    },
+    {
+      "src": "imgs/pyramid.jpg",
+      "sizes": "512x512",
+      "type": "image/jpeg",
+      "purpose": "any maskable"
+    }
+  ]
+}
