@@ -60,3 +60,12 @@ Update the Function URL in `web/index.html` if needed:
 - Demo overrides via URL params:
   - `?nearby=on` (uses Giza Pyramids) or `?nearby=29.9792,31.1342`
   - Optional `&radiusKm=5` to expand the detection radius
+
+## GitHub Pages deployment
+This repo includes a workflow to deploy the `web/` folder to GitHub Pages on every push to `main`.
+
+Steps:
+1. In GitHub Settings → Pages, set Source to “GitHub Actions”.
+2. Push to `main` and wait for the `Deploy to GitHub Pages` workflow to finish.
+3. Your site will be available at `https://<owner>.github.io/<repo>/`.
+4. Update your Lambda Function URL CORS to allow exactly this origin (and remove any wildcard or old origins).
