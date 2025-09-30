@@ -4,7 +4,20 @@
       "id": "giza-pyramids",
       "names": {
         "en": ["Giza Pyramids", "Pyramids of Giza", "Great Pyramid of Giza", "Khufu", "Khafre", "Menkaure"],
-        "ar": ["أهرامات الجيزة", "الهرم الأكبر", "خوفو", "خفرع", "منقرع"]
+        "ar": [
+          "أهرامات الجيزة",
+          "الأهرامات",
+          "الاهرامات",
+          "الأهرام",
+          "الاهرام",
+          "اهرامات",
+          "أهرامات",
+          "الجيزة",
+          "الهرم الأكبر",
+          "خوفو",
+          "خفرع",
+          "منقرع"
+        ]
       },
       "facts": [
         "The Giza pyramid complex dates to Egypt's Old Kingdom (circa 26th century BCE).",
@@ -19,7 +32,7 @@
       "id": "great-sphinx",
       "names": {
         "en": ["Great Sphinx", "Sphinx of Giza"],
-        "ar": ["أبو الهول", "أبو الهول بالجيزة"]
+        "ar": ["أبو الهول", "أبو الهول بالجيزة", "السفنكس", "سفينكس"]
       },
       "facts": [
         "Limestone statue with a lion's body and a human head, near the Giza pyramids.",

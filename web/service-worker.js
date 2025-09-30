@@ -1,5 +1,5 @@
 /* Turath Lens Service Worker */
-const CACHE_NAME = 'turath-lens-v1';
+const CACHE_NAME = 'turath-lens-v2';
 const OFFLINE_URL = 'offline.html';
 const CORE_ASSETS = [
   './',

@@ -1,15 +1,20 @@
-//  Lightweight RAG: reads facts.json and shows a citations panel if keywords match.
+// Lightweight RAG: reads facts.json and shows a citations panel if keywords match.
 const FactsPlugin = (() => {
   let DB = null;
 
   const normalize = (s = "") =>
-    s.toLowerCase()
-     // remove simple Arabic diacritics
-     .replace(/[\u064B-\u0652]/g, "")
-     // Arabic/Latin punctuation to spaces
-     .replace(/[.,;:!؟،~'"(){}\[\]-]/g, " ")
-     .replace(/\s+/g, " ")
-     .trim();
+    s
+      .toLowerCase()
+      // unify Arabic forms
+      .replace(/[\u064B-\u0652]/g, "")             // strip diacritics
+      .replace(/\u0640/g, "")                        // tatweel
+      .replace(/[\u0622\u0623\u0625\u0671]/g, "\u0627") // alif variants -> alif
+      .replace(/\u0629/g, "\u0647")                 // ta marbuta -> ha
+      .replace(/\u0649/g, "\u064a")                 // alif maqsoora -> ya
+      // punctuation to spaces (Latin + Arabic)
+      .replace(/[.,;:!\u061f\u060c~'"(){}\[\]\-_/\\|]/g, " ")
+      .replace(/\s+/g, " ")
+      .trim();
 
   async function loadDB(url = "./facts.json") {
     if (DB) return DB;
@@ -18,18 +23,15 @@ const FactsPlugin = (() => {
     return DB;
   }
 
-  function matchItems(text, lang = "ar") {
+  function matchItems(text) {
     const hay = normalize(text);
     if (!DB?.items?.length || !hay) return [];
-
     const hits = [];
     for (const item of DB.items) {
       const kw = [
         ...(item.names?.ar || []),
         ...(item.names?.en || [])
       ].map(normalize).filter(Boolean);
-
-      // keyword present if any term appears as a whole word or substring
       const found = kw.some(term => hay.includes(term) && term.length > 2);
       if (found) hits.push(item);
     }
@@ -90,12 +92,11 @@ const FactsPlugin = (() => {
     container.appendChild(wrap);
   }
 
-  // Public API
-  async function maybeShowFacts({ text, lang = "ar", containerId = "factsPanel" } = {}) {
+  async function maybeShowFacts({ text, containerId = "factsPanel" } = {}) {
     await loadDB();
     const container = document.getElementById(containerId);
     if (!container) return;
-    const items = matchItems(text || "", lang);
+    const items = matchItems(text || "");
     renderPanel(items, container);
   }
 
