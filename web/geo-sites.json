@@ -1,0 +1,12 @@
+{
+  "sites": [
+    { "id": "giza-pyramids", "name_en": "Giza Pyramids", "name_ar": "أهرامات الجيزة", "lat": 29.9792, "lon": 31.1342 },
+    { "id": "great-sphinx", "name_en": "Great Sphinx", "name_ar": "أبو الهول", "lat": 29.9753, "lon": 31.1376 },
+    { "id": "karnak", "name_en": "Karnak", "name_ar": "الكرنك", "lat": 25.7188, "lon": 32.6573 },
+    { "id": "luxor-temple", "name_en": "Luxor Temple", "name_ar": "معبد الأقصر", "lat": 25.6996, "lon": 32.6396 },
+    { "id": "abu-simbel", "name_en": "Abu Simbel", "name_ar": "أبو سمبل", "lat": 22.3372, "lon": 31.6258 },
+    { "id": "saqqara-djoser", "name_en": "Saqqara (Djoser)", "name_ar": "سقارة (زوسر)", "lat": 29.8713, "lon": 31.2165 },
+    { "id": "philae", "name_en": "Philae", "name_ar": "فيلة", "lat": 24.0247, "lon": 32.8845 },
+    { "id": "saladin-citadel", "name_en": "Saladin Citadel", "name_ar": "قلعة صلاح الدين", "lat": 30.0299, "lon": 31.2617 }
+  ]
+}
