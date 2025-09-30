@@ -4,6 +4,8 @@
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <title>Turath Lens</title>
+  <meta name="theme-color" content="#1f6f8b"/>
+  <link rel="manifest" href="manifest.json"/>
   <style>
     /* Egypt heritage palette */
     :root {
@@ -92,6 +94,9 @@
       <button id="langToggle" class="chip" title="Toggle language">العربية</button>
     </div>
 
+    <!-- Nearby panel (geolocation hint) -->
+    <div id="nearbyPanel" style="display:none; margin: 12px 0;"></div>
+
     <div class="card">
       <h1 id="title">Turath Lens — Heritage Assistant</h1>
       <div id="subtitle" class="meta">Upload a photo of a heritage site or artifact, and get a concise Arabic description. Then ask follow‑up questions.</div>
@@ -143,6 +148,7 @@
       </div>
       <div class="row">
         <button id="ask">Ask</button>
+        <button id="mic" title="Voice input">🎤 Speak</button>
       </div>
     </div>
 
@@ -151,6 +157,10 @@
       You can tweak <span class="kbd">quality</span> and <span class="kbd">max side</span> above.
     </p>
   </div>
+
+  <!-- Plugins: Facts & Nearby -->
+  <script src="facts-plugin.js"></script>
+  <script src="geo-plugin.js"></script>
 
   <script>
     // Replace with your Function URL (trailing slash is fine)
@@ -185,7 +195,11 @@
         analyzeErrorPrefix: "Error during analyze: ",
         chatErrorPrefix: "Error during chat: ",
         themeImage: "🎨 Theme: Image",
-        themeColors: "🎨 Theme: Colors"
+        themeColors: "🎨 Theme: Colors",
+        micStart: "🎤 Speak",
+        micStop: "⏹ Stop",
+        listening: "Listening...",
+        voiceNotSupported: "Voice input not supported"
       },
       ar: {
         toggle: "English",
@@ -212,7 +226,11 @@
         analyzeErrorPrefix: "خطأ أثناء التحليل: ",
         chatErrorPrefix: "خطأ أثناء السؤال: ",
         themeImage: "🎨 الخلفية: صورة",
-        themeColors: "🎨 الخلفية: ألوان"
+        themeColors: "🎨 الخلفية: ألوان",
+        micStart: "🎤 تَحَدَّث",
+        micStop: "⏹ إيقاف",
+        listening: "جارٍ الاستماع...",
+        voiceNotSupported: "الصوت غير مدعوم"
       }
     };
 
@@ -233,7 +251,8 @@
     const $maxSide = el('maxSide'), $maxSideVal = el('maxSideVal');
     const $answerHeading = el('answerHeading'), $answer = el('answer');
     const $speak = el('speak'), $copy = el('copy'), $answerNote = el('answerNote');
-    const $followHeading = el('followHeading'), $question = el('question'), $ask = el('ask');
+  const $followHeading = el('followHeading'), $question = el('question'), $ask = el('ask');
+  const $mic = el('mic');
     const $tip = el('tip');
 
     // Helpers
@@ -327,6 +346,10 @@
         $answerNote.textContent = T[lang].responseNote;
         $speak.classList.remove('hidden');
         $copy.classList.remove('hidden');
+        // Show facts & sources if applicable
+        if (window.FactsPlugin?.maybeShowFacts) {
+          FactsPlugin.maybeShowFacts({ text: `${lastAnswer} ${$question.value || ''}` });
+        }
         setStatus(T[lang].statusDone, 'ok');
       } catch (e) {
         console.error(e);
@@ -349,12 +372,48 @@
         });
         lastAnswer = data.answer || data.raw || '(no response)';
         $answer.textContent = lastAnswer;
+        // Update facts panel based on latest exchange
+        if (window.FactsPlugin?.maybeShowFacts) {
+          FactsPlugin.maybeShowFacts({ text: `${$question.value || ''} ${lastAnswer}` });
+        }
         setStatus(T[lang].statusDone, 'ok');
       } catch(e){
         console.error(e);
         setStatus(T[lang].statusError, 'err');
         $answer.textContent = T[lang].chatErrorPrefix + e.message;
       }
+    }
+
+    // Voice input (SpeechRecognition)
+    let recog = null, recognizing = false;
+    function getRecognizer(){
+      const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+      if (!SR) return null;
+      const r = new SR();
+      r.lang = (lang === 'ar') ? 'ar' : 'en-US';
+      r.interimResults = false;
+      r.maxAlternatives = 1;
+      return r;
+    }
+
+    function toggleMic(){
+      if (recognizing && recog) { try { recog.stop(); } catch(_){} return; }
+      recog = getRecognizer();
+      if (!recog) { setStatus(T[lang].voiceNotSupported, 'err'); return; }
+      recognizing = true;
+      $mic.textContent = T[lang].micStop;
+      setStatus(T[lang].listening, 'warn');
+      recog.onresult = (e) => {
+        const t = e.results?.[0]?.[0]?.transcript || '';
+        if (t) { $question.value = t; }
+      };
+      recog.onerror = (e) => {
+        setStatus((lang==='ar' ? 'خطأ الميكروفون: ' : 'Mic error: ') + (e?.error || ''), 'err');
+      };
+      recog.onend = () => {
+        recognizing = false; $mic.textContent = T[lang].micStart; setStatus('');
+      };
+      try { recog.start(); } catch(_) { recognizing = false; $mic.textContent = T[lang].micStart; }
     }
 
     function speak(){
@@ -393,6 +452,9 @@
       $qualityVal.textContent = Number($quality.value).toFixed(2);
       $maxSideVal.textContent = String($maxSide.value);
       $themeToggle.textContent = document.body.classList.contains('no-image') ? T[l].themeColors : T[l].themeImage;
+      if ($mic) $mic.textContent = T[l].micStart;
+      // Update recognizer language if active
+      if (recog) { try { recog.lang = (l === 'ar') ? 'ar' : 'en-US'; } catch(_){} }
     }
 
     function toggleLang(){ applyLang(lang === 'ar' ? 'en' : 'ar'); }
@@ -427,10 +489,23 @@
       $themeToggle.addEventListener('click', toggleTheme);
       el('analyze').addEventListener('click', analyze);
       el('ask').addEventListener('click', ask);
+      if ($mic) $mic.addEventListener('click', toggleMic);
       el('speak').addEventListener('click', speak);
       el('copy').addEventListener('click', copyAnswer);
       el('quality').addEventListener('input', () => el('qualityVal').textContent = Number(el('quality').value).toFixed(2));
       el('maxSide').addEventListener('input', () => el('maxSideVal').textContent = String(el('maxSide').value));
+
+      // Nearby geolocation hint (requires HTTPS in most browsers)
+      if (window.GeoPlugin?.checkNearby) {
+        try { GeoPlugin.checkNearby(); } catch(_){}
+      }
+
+      // Register Service Worker (PWA)
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('./service-worker.js').catch(() => {});
+        });
+      }
     })();
   </script>
 </body>

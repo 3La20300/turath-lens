@@ -7,8 +7,8 @@
         "ar": ["أهرامات الجيزة", "الهرم الأكبر", "خوفو", "خفرع", "منقرع"]
       },
       "facts": [
-        "The Giza pyramid complex dates to Egypt’s Old Kingdom (circa 26th century BCE).",
-        "The Great Pyramid is attributed to Pharaoh Khufu and was the tallest man‑made structure for millennia.",
+        "The Giza pyramid complex dates to Egypt's Old Kingdom (circa 26th century BCE).",
+        "The Great Pyramid is attributed to Pharaoh Khufu and was the tallest man-made structure for millennia.",
         "The three main pyramids are attributed to Khufu, Khafre, and Menkaure."
       ],
       "sources": [
@@ -22,7 +22,7 @@
         "ar": ["أبو الهول", "أبو الهول بالجيزة"]
       },
       "facts": [
-        "Limestone statue with a lion’s body and a human head, near the Giza pyramids.",
+        "Limestone statue with a lion's body and a human head, near the Giza pyramids.",
         "Commonly associated with Pharaoh Khafre (Old Kingdom)."
       ],
       "sources": [
@@ -48,7 +48,7 @@
       "names": {
         "en": ["Luxor Temple"],
         "ar": ["معبد الأقصر"]
-      ],
+      },
       "facts": [
         "Major temple on the east bank of the Nile in Luxor, linked to Karnak by the Avenue of Sphinxes.",
         "Key associations with the Opet festival in the New Kingdom."
@@ -62,7 +62,7 @@
       "names": {
         "en": ["Abu Simbel", "Great Temple of Ramses II"],
         "ar": ["أبو سمبل", "معبد رمسيس الثاني بأبو سمبل"]
-      ],
+      },
       "facts": [
         "Rock-cut temples built by Ramses II, relocated in the 1960s due to the Aswan High Dam.",
         "Famous for the colossal seated statues at the entrance."
@@ -76,7 +76,7 @@
       "names": {
         "en": ["Saqqara", "Step Pyramid of Djoser"],
         "ar": ["سقارة", "هرم زوسر المدرج"]
-      ],
+      },
       "facts": [
         "The Step Pyramid of Djoser at Saqqara is considered the earliest colossal stone building in Egypt.",
         "Designed by the architect Imhotep for Pharaoh Djoser."
@@ -90,7 +90,7 @@
       "names": {
         "en": ["Philae", "Temple of Isis"],
         "ar": ["فيلة", "معبد إيزيس"]
-      ],
+      },
       "facts": [
         "Temple complex dedicated to Isis; relocated to Agilkia Island during the UNESCO project.",
         "Blend of Pharaonic and later influences."
@@ -104,7 +104,7 @@
       "names": {
         "en": ["Egyptian Museum (Tahrir)"],
         "ar": ["المتحف المصري بالتحرير"]
-      ],
+      },
       "facts": [
         "Houses a vast collection of ancient Egyptian antiquities.",
         "Located in Tahrir Square, Cairo (collections are transitioning to GEM and NMEC)."
@@ -118,7 +118,7 @@
       "names": {
         "en": ["Saladin Citadel", "Cairo Citadel"],
         "ar": ["قلعة صلاح الدين", "قلعة القاهرة"]
-      ],
+      },
       "facts": [
         "Medieval Islamic-era fortification in Cairo with panoramic city views.",
         "Includes later monuments such as the Mosque of Muhammad Ali."
@@ -132,10 +132,10 @@
       "names": {
         "en": ["Mosque-Madrasa of Sultan Hassan"],
         "ar": ["مسجد ومدرسة السلطان حسن"]
-      ],
+      },
       "facts": [
         "Mamluk-era monumental complex famed for its grand scale and stonework.",
-        "Built in the 14th century during the reign of Sultan an‑Nasir Hasan."
+        "Built in the 14th century during the reign of Sultan an-Nasir Hasan."
       ],
       "sources": [
         { "title": "Wikipedia: Mosque-Madrasa of Sultan Hassan", "url": "https://en.wikipedia.org/wiki/Mosque-Madrasa_of_Sultan_Hassan" }
