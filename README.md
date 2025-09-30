@@ -54,3 +54,9 @@ Update the Function URL in `web/index.html` if needed:
 - Facts panel shows for common sites (e.g., Pyramids)
 - Nearby panel shows on HTTPS near known coordinates (e.g., Giza)
 - Voice input fills question field and follows UI language
+
+## Nearby (Geolocation)
+- Requires HTTPS (or http://localhost) and location permission.
+- Demo overrides via URL params:
+  - `?nearby=on` (uses Giza Pyramids) or `?nearby=29.9792,31.1342`
+  - Optional `&radiusKm=5` to expand the detection radius
